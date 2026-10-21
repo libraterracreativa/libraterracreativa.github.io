@@ -1,0 +1,42 @@
+name: Sincronizza calendario Airbnb
+
+on:
+  schedule:
+    - cron: '17 * * * *'   # ogni ora
+  workflow_dispatch:        # avvio manuale da Actions → "Run workflow"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-calendar
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Scarica i calendari iCal
+        env:
+          ICAL_MARINE: ${{ secrets.ICAL_MARINE }}
+          ICAL_FORESTA: ${{ secrets.ICAL_FORESTA }}
+          ICAL_RELAX: ${{ secrets.ICAL_RELAX }}
+        run: node scripts/sync-ical.mjs
+
+      - name: Salva se ci sono novità
+        run: |
+          if git diff --quiet casa-libra/data/availability.json; then
+            echo "Calendario invariato."
+          else
+            git config user.name "casa-libra-bot"
+            git config user.email "actions@users.noreply.github.com"
+            git add casa-libra/data/availability.json
+            git commit -m "Aggiorna disponibilità Casa Libra"
+            git push
+          fi
