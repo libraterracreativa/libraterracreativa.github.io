@@ -550,3 +550,4 @@ html.liquid .glass.refract{-webkit-backdrop-filter:url(#liquid) blur(6px) satura
 .cal-menu a:hover{background:var(--sand);color:var(--clay);}
 .cp-link{background:none;border:none;color:var(--clay);font:inherit;font-size:12px;font-weight:600;cursor:pointer;padding:0;text-decoration:underline;}
 .btn-light{background:transparent;}
+@media(max-width:520px){.nav .brand span em{display:none;}}
