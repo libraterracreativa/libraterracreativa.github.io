@@ -1,0 +1,104 @@
+/* =========================================================
+   LIBRA · effetti (insieme a /assets/js/libra-fx.js)
+   ========================================================= */
+
+/* ---------- PASSAGGIO TRA LE PAGINE ---------- */
+@view-transition{navigation:auto;}
+::view-transition{background:var(--clay,#A65D3C);}
+/* velo: la pagina vecchia si allontana, la nuova sale dal basso come un sipario */
+html:active-view-transition-type(veil)::view-transition-old(root){animation:vtAway .75s cubic-bezier(.7,0,.3,1) both;}
+html:active-view-transition-type(veil)::view-transition-new(root){animation:vtRise .85s cubic-bezier(.7,0,.3,1) .12s both;}
+@keyframes vtAway{to{transform:scale(.93) translateY(-3%);border-radius:28px;opacity:.55;}}
+@keyframes vtRise{from{clip-path:inset(100% 0 0 0 round 28px 28px 0 0);}to{clip-path:inset(0 0 0 0 round 0);}}
+/* porta: la foto cliccata si allarga fino a diventare l'apertura della pagina nuova */
+html:active-view-transition-type(door)::view-transition-old(root){animation:vtFade .5s ease both;}
+html:active-view-transition-type(door)::view-transition-new(root){animation:vtFade .6s ease .35s both reverse;}
+@keyframes vtFade{to{opacity:0;}}
+::view-transition-group(hero){animation-duration:.95s;animation-timing-function:cubic-bezier(.7,0,.25,1);}
+::view-transition-old(hero),::view-transition-new(hero){height:100%;object-fit:cover;}
+::view-transition-group(hero){border-radius:28px;overflow:hidden;}
+/* sulla pagina d'arrivo la foto è già al suo posto (niente dissolvenza d'ingresso) */
+html.vt-door .cover{animation:none;opacity:1;transform:rotate(2.5deg);}
+@media(prefers-reduced-motion:reduce){::view-transition-group(*),::view-transition-old(*),::view-transition-new(*){animation:none!important;}}
+
+/* ---------- APERTURA: la libellula di Libra prende il volo ---------- */
+/* finché c'è l'apertura, le animazioni della pagina aspettano (tranne quelle dell'apertura stessa) */
+html.intro-run body>:not(.intro),html.intro-run body>:not(.intro) *{animation-play-state:paused!important;}
+html.libra-intro::before{content:'';position:fixed;inset:0;z-index:9999;background:var(--sand,#F2ECE3);}
+.intro{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;overflow:hidden;cursor:pointer;transition:opacity .35s;}
+.intro.skip{opacity:0;pointer-events:none;}
+/* il fondo sabbia: dietro la libellula si apre un cerchio (--r) che scopre la pagina */
+.intro-bg{position:absolute;inset:0;background:var(--sand,#F2ECE3);--r:0px;
+  -webkit-mask:radial-gradient(circle at 50% 48%,transparent var(--r),#000 calc(var(--r) + 1px));
+          mask:radial-gradient(circle at 50% 48%,transparent var(--r),#000 calc(var(--r) + 1px));}
+/* il logo: scritta + libellula, nelle proporzioni del logo ufficiale */
+.intro-logo{position:relative;width:min(440px,58vw);transform:translateX(-11%);}
+.intro-word{display:block;width:100%;height:auto;clip-path:inset(0 100% 0 0);
+  transition:clip-path .9s cubic-bezier(.65,0,.35,1) .1s,opacity .5s .1s,transform .7s .1s;}
+.intro.go .intro-word{clip-path:inset(0 0 0 0);}
+.intro.fast .intro-word{opacity:0;transform:translateY(16px);}
+/* lampo sulla stellina */
+.intro-spark{position:absolute;left:26.2%;top:18%;width:9%;aspect-ratio:1;border-radius:50%;translate:-50% -50%;opacity:0;
+  background:radial-gradient(circle,rgba(255,250,240,.95),rgba(255,250,240,0) 62%);}
+.intro.go .intro-spark{animation:introSpark .9s .75s cubic-bezier(.2,.7,.3,1) both;}
+@keyframes introSpark{0%{opacity:0;scale:.3;}35%{opacity:1;scale:1.4;}100%{opacity:0;scale:.5;}}
+/* la libellula: in fondo alla scritta, un po' più in alto, la coda sotto la riga */
+.intro-fly{position:absolute;left:80.5%;top:-46%;width:44.6%;height:auto;overflow:visible;fill:var(--ink,#221E1A);
+  transform-origin:55% 25%;will-change:transform;opacity:0;translate:0 -10px;transition:opacity .6s .45s,translate .9s .45s cubic-bezier(.2,.7,.3,1);}
+.intro.go .intro-fly{opacity:1;translate:0 0;}
+/* le ali battono attorno al corpo: lente a riposo, velocissime al decollo */
+.if-w{transform-box:view-box;animation:introFlap .32s ease-in-out infinite alternate;}
+.if-l{transform-origin:466px 235px;}
+.if-r{transform-origin:528px 235px;}
+.intro.fast .if-w{animation-duration:.065s;}
+@keyframes introFlap{to{transform:scaleX(.38);}}
+
+/* ---------- NASTRO DI PAROLE ---------- */
+.ribbon{position:relative;z-index:3;overflow:hidden;background:var(--olive,#2E3A2C);color:var(--linen,#FCFAF6);transform:rotate(-2deg);margin:-14px -3vw;padding:20px 0;box-shadow:0 18px 40px rgba(0,0,0,.12);}
+.rb-track{display:flex;width:max-content;will-change:transform;}
+.rb-chunk{display:flex;align-items:center;white-space:nowrap;}
+.rb-chunk span{font-family:var(--serif,'Gambarino',Georgia,serif);font-size:clamp(1.7rem,3.6vw,3rem);line-height:1;padding:0 .55em;}
+.rb-chunk i{font-style:normal;font-size:.95rem;color:var(--ochre,#E3B98A);}
+.ribbon-wrap{overflow:hidden;padding:34px 0;}
+.ribbon.clay{background:var(--clay);}
+.ribbon.clay .rb-chunk i{color:var(--linen);opacity:.7;}
+@media(max-width:700px){.ribbon{padding:14px 0;}}
+
+/* ---------- CARD CHE SI INCLINANO ---------- */
+.month{position:relative;overflow:hidden;}
+.tilting{transition:transform .18s ease-out,box-shadow .45s!important;will-change:transform;}
+.glare{position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;opacity:0;transition:opacity .4s;mix-blend-mode:soft-light;
+  background:radial-gradient(circle at var(--tx,50%) var(--ty,50%),rgba(255,255,255,.75),rgba(255,255,255,0) 55%);}
+.tilting>.glare{opacity:1;}
+
+/* ---------- TIMBRO ROTANTE ---------- */
+.stamp{position:relative;display:grid;place-items:center;width:112px;height:112px;border-radius:50%;background:var(--clay,#A65D3C);color:var(--linen,#FCFAF6);box-shadow:0 14px 34px rgba(0,0,0,.22);transition:transform .5s cubic-bezier(.2,.7,.3,1);flex:none;}
+.stamp svg{position:absolute;inset:0;width:100%;height:100%;animation:stampSpin 40s linear infinite;}
+.stamp text{font-family:var(--sans,'Satoshi',system-ui,sans-serif);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;fill:currentColor;}
+.stamp img{position:static!important;inset:auto!important;width:30%!important;height:auto!important;object-fit:contain!important;animation:none!important;transform:none!important;z-index:auto!important;filter:brightness(0) invert(1);}
+.stamp:hover{transform:scale(1.08) rotate(-6deg);}
+.stamp:hover svg{animation-duration:9s;}
+@keyframes stampSpin{to{transform:rotate(360deg);}}
+@media(max-width:700px){.stamp{width:86px;height:86px;}.stamp text{font-size:10px;}}
+@media(prefers-reduced-motion:reduce){.stamp svg{animation:none;}}
+/* posizioni */
+.door .stamp{position:absolute;top:18px;right:18px;z-index:4;}
+.pv-hero .stamp,.hero .stamp{position:absolute;right:max(16px,5vw);bottom:clamp(30px,9vh,90px);z-index:4;}
+.hero .stamp{right:max(84px,8vw);}
+@media(max-width:760px){.pv-hero .stamp,.hero .stamp{top:96px;bottom:auto;right:16px;}}
+
+/* ---------- PUNTATORE: la libellula (al posto del pallino e del cerchio) ---------- */
+.cur-fly{display:none;}
+@media (hover:hover) and (pointer:fine){
+  html.has-fly .cur-dot{display:none!important;}
+  html.has-fly .cur-ring:not(.on-img){opacity:0!important;}
+  .cur-fly{display:block;position:fixed;left:0;top:0;z-index:501;width:30px;pointer-events:none;will-change:transform;fill:var(--ink,#221E1A);transition:opacity .2s;}
+  .cur-fly svg{display:block;width:100%;height:auto;overflow:visible;transform-origin:55% 11%;transition:transform .3s cubic-bezier(.2,.7,.3,1);}
+  .cur-fly .if-w{transform-box:view-box;animation:introFlap .4s ease-in-out infinite alternate;}
+  .cur-fly.moving .if-w{animation-duration:.08s;}
+  .cur-fly.on-link{fill:var(--clay,#A65D3C);}
+  .cur-fly.on-link svg{transform:scale(1.35);}
+  .cur-fly.on-dark{fill:var(--linen,#FCFAF6);}
+  .cur-fly.cur-hide{opacity:0;}
+}
+@media(prefers-reduced-motion:reduce){.cur-fly .if-w{animation:none;}}
