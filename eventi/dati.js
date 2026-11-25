@@ -1,15 +1,18 @@
 /* Dati del mese: li legge la pagina /eventi/ e la home (prossimi eventi). */
 /* =========================================================
-   EVENTI DI NOVEMBRE 2026 · unica fonte dei dati della pagina
+   EVENTI DI DICEMBRE 2026 · unica fonte dei dati della pagina
    Per aggiornare il mese: cambiare MESE, EVENTI e FISSI (e la palette in alto).
    when: [['inizio','fine'], …]   price: '25€' · priceLabel: 'a persona' · priceNote: '+ …'
    link: indirizzo esterno di prenotazione (se vuoto si apre il modulo) · orario: testo dell'orario se diverso da 'inizio – fine'
+   FISSI · salta: ['AAAA-MM-GG', …] giorni in cui l'appuntamento fisso non c'è (es. Natale)
    ========================================================= */
-var MESE={anno:2026,mese:10 /* 0 = gennaio */,nome:'novembre',pagine:12,cartellaPagine:'/assets/img/librazine/2026-11/'};
-var IMG='/assets/img/eventi/2026-11/';
+var MESE={anno:2026,mese:11 /* 0 = gennaio */,nome:'dicembre',pagine:12,cartellaPagine:'/assets/img/librazine/2026-12/'};
+var IMG='/assets/img/eventi/2026-12/';
 /* Fascia "il mese prima non è finito": finché non arriva la data 'fino', in cima alla pagina compare un link agli eventi del mese precedente.
    Si nasconde da sola. OGNI MESE: aggiornare nome, link (la pagina del mese che sta finendo) e fino (il 1° del mese nuovo). Per toglierla: var MESE_PRIMA=null; */
-var MESE_PRIMA={nome:'ottobre',link:'https://libraterracreativa.github.io/OTTOBRE-26/',fino:'2026-11-01'};
+/* Giorni di festa evidenziati nel calendario (con il tema natalizio, che si accende in assets/js/tema-natale.js). */
+var FESTE_MESE={'2026-12-24':'Vigilia','2026-12-25':'Natale','2026-12-26':'S. Stefano','2026-12-31':'S. Silvestro'};
+var MESE_PRIMA=null; /* es. {nome:'novembre',link:'/eventi/2026-11/',fino:'2026-12-01'} */
 var CATEGORIE={
   benessere:{nome:'Benessere',colore:'var(--c-benessere)'},
   interiorita:{nome:'Interiorità',colore:'var(--c-interiorita)'},
@@ -18,72 +21,55 @@ var CATEGORIE={
   arte:{nome:'Arte',colore:'var(--c-arte)'}
 };
 var EVENTI=[
- {id:'tarocchi',titolo:'Tarocchi & Astrologia',chi:'con FraSonica',cat:'interiorita',img:'tarocchi.jpg',pos:'center 30%',tag:'Sessioni individuali',
-  when:[['2026-11-01T14:00','2026-11-01T20:00']],
-  testo:"Una giornata dedicata all'ascolto e alla scoperta di sé attraverso due strumenti di introspezione. Si può prenotare una lettura privata dei Tarocchi di Marsiglia, per esplorare domande e situazioni personali con il linguaggio degli archetipi, oppure una lettura astrologica del proprio tema natale.",
-  extra:'<p>Due percorsi distinti, da scegliere in base alla propria curiosità. Sessioni individuali in presenza da Libra, su prenotazione: indica nelle note se preferisci tarocchi o astrologia.</p>',
-  price:'55€',priceLabel:'a sessione',book:'Tarocchi & Astrologia con FraSonica (Domenica 1 Novembre, sessione individuale 14:00–20:00)'},
- {id:'costellazioni-familiari',titolo:'Costellazioni Familiari',chi:'con Viviana Usai',cat:'interiorita',img:'costellazioni-familiari.jpg',tag:'Sistema familiare',
-  when:[['2026-11-04T18:30','2026-11-04T22:00']],
-  testo:"Un lavoro esperienziale per esplorare ciò che agisce in modo invisibile dentro di noi e nella nostra storia familiare. Attraverso il corpo, le Costellazioni Familiari e Sistemiche invitano a incontrare ciò che è rimasto irrisolto e ad accompagnarlo verso una trasformazione.",
-  extra:"<p>Viviana Usai è psicologa, psicoterapeuta e formatrice. Da oltre vent'anni accompagna le persone in percorsi di crescita, integrando approcci psicocorporei, Costellazioni Familiari e Bioenergetica.</p>",
-  price:'25€',priceLabel:'a persona',priceNote:'+ 30€ se porti la tua richiesta (la tua costellazione)',book:'Costellazioni Familiari con Viviana Usai (Mercoledì 4 Novembre, 18:30)'},
- {id:'brunch',titolo:'Sunday Brunch',chi:'i sapori di novembre · by Libra',cat:'cucina',img:'brunch.jpg',contain:true,tag:'2 domeniche',
-  when:[['2026-11-08T12:00','2026-11-08T16:00'],['2026-11-29T12:00','2026-11-29T16:00']],
-  testo:"Il brunch vegetale della domenica, con il menu dei sapori di novembre.",
-  extra:'<ul><li><b>Pancakes</b> con ricotta di mandorle, confettura calda di pere e sciroppo d\'uva</li><li><b>Croissants</b></li><li><b>Avo toast</b> con feta veg e semi di zucca</li><li><b>Hummus</b> di barbabietola e focaccina cotta a legna</li></ul>',
-  price:'35€',priceLabel:'a persona',book:'Sunday Brunch (Domenica 8 o 29 Novembre, 12:00–16:00 – specifica la data)'},
- {id:'educare',titolo:'Educare alla libertà attraverso i limiti',chi:'con la dott.ssa Serena Luisi · Centro Eidos',cat:'famiglia',img:'educare.jpg',tag:'Per genitori',
-  when:[['2026-11-11T18:00','2026-11-11T20:00'],['2026-12-02T18:00','2026-12-02T20:00']],
-  testo:"«Se pongo dei limiti o dico dei no, non starò forse bloccando l'autonomia di mio figlio?» Un incontro introduttivo sul valore dei limiti e sul ruolo di madre e padre nello sviluppo di autoregolazione, autonomia e fiducia nei bambini.",
-  extra:'<p>Con la dott.ssa Serena Luisi, direttrice di Eidos aps, psicologa e psicoterapeuta, secondo la visione del Progetto Campo Armonico: Pedagogia Montessori, Psicoterapia della Gestalt e Neuroscienze dello sviluppo.</p><p><b>Secondo incontro · mercoledì 2 dicembre, 18:00–20:00:</b> laboratorio esperienziale in piccolo gruppo, dalla teoria alla pratica educativa.</p>',
-  price:'25€',priceLabel:'a famiglia',priceNote:'stesso prezzo per il secondo incontro del 2 dicembre',book:'Educare alla libertà attraverso i limiti · dott.ssa Serena Luisi (Mercoledì 11 Novembre e/o Mercoledì 2 Dicembre, 18:00 – specifica nelle note)'},
- {id:'elements',titolo:'Elements of Life · inaugurazione',chi:'mostra di Serena Rossi a Casa Libra',cat:'arte',img:'elements-1.png',contain:true,tag:'A Casa Libra',
-  when:[['2026-11-13T15:30','2026-11-13T19:30']],orario:'dalle 15.30',
-  testo:"L'inaugurazione della mostra fotografica di Serena Rossi a Casa Libra, Valdicastello Carducci. Dalle 15:30 si può visitare la mostra e scoprire le stanze della nuova guest house.",
-  extra:'<p>La mostra resta aperta fino al 13 maggio 2027. <a href="#mostra" style="color:var(--clay);text-decoration:underline">Leggi di più</a></p>',
-  price:'Gratis',priceLabel:'ingresso libero',book:'Inaugurazione mostra Elements of Life · Serena Rossi a Casa Libra (Venerdì 13 Novembre, dalle 15:30)'},
- {id:'essenza',titolo:"Dall'essenza al suono",chi:"con Andrea Parigi · Cantore dell'Anima",cat:'benessere',img:'essenza-suono.jpg',tag:'Giornata intera',
-  when:[['2026-11-14T10:00','2026-11-14T18:00']],
-  testo:"Un'esperienza di presenza, silenzio interiore, meditazione e suono, per andare oltre le identificazioni della personalità e riscoprire il proprio vero Sé. Non si tratta di imparare a cantare, ma di imparare ad ascoltarsi.",
-  extra:"<p>Da oltre 25 anni Andrea Parigi accompagna le persone in percorsi di ascolto, consapevolezza e risveglio della Coscienza: un canto intuitivo che nasce dall'ascolto profondo dell'Essere.</p>",
-  price:'130€',priceLabel:'a persona',priceNote:'pranzo incluso',book:"Dall'essenza al suono con Andrea Parigi (Sabato 14 Novembre, 10:00–18:00)"},
- {id:'respiro',titolo:"L'arte del respiro",chi:'con Mathieu · Yoga Versilia',cat:'benessere',img:'arte-respiro.jpg',pos:'center 25%',tag:'Retreat',
-  when:[['2026-11-15T09:30','2026-11-15T15:30']],
-  testo:"Un workshop esperienziale sulla respirazione e sul suo legame con corpo, sistema nervoso e mente: le neuroscienze incontrano la tradizione millenaria dello yoga. Aperto a tutti, anche a chi non ha mai praticato.",
-  extra:'<ul><li><b>9:30</b> Accoglienza e introduzione al respiro</li><li><b>10:00</b> La scienza del respiro: anatomia, sistema nervoso, neuroscienze</li><li><b>11:00</b> Il respiro nel movimento: pratica di yoga</li><li><b>12:00</b> Brunch vegano e condivisione</li><li><b>13:00</b> L\'arte del pranayama: tecniche e pratica guidata</li><li><b>14:00</b> Il respiro nella vita quotidiana</li><li><b>15:00</b> Conclusione</li></ul>',
-  price:'',book:"L'arte del respiro con Mathieu (Domenica 15 Novembre, 9:30–15:30)"},
- {id:'merenda',titolo:'La merenda che vorrei',chi:'Libra × Sementis Bakery',cat:'cucina',img:'merenda.jpg',tag:'Merenda',
-  when:[['2026-11-15T16:00','2026-11-15T18:00']],
-  testo:"Una merenda lenta, da Libra, con i dolci artigianali di Sementis Bakery.",
-  extra:'<ul><li><b>4 dolci artigianali</b> by Sementis Bakery</li><li><b>Focaccina</b> Amasia</li><li><b>2 infusi</b> naturali</li></ul>',
-  price:'35€',priceLabel:'a coppia',book:'La merenda che vorrei · Libra × Sementis (Domenica 15 Novembre, 16:00–18:00)'},
- {id:'costellazioni-spirituali',titolo:'Costellazioni spirituali',chi:'con Maddalena Angeli',cat:'interiorita',img:'costellazioni-spirituali.jpg',tag:'Serata',
-  when:[['2026-11-26T20:30','2026-11-26T22:30']],
-  testo:"Uno strumento per guardare oltre ciò che appare ed esplorare, da una prospettiva più consapevole, le dinamiche che muovono eventi ed emozioni che non sempre riusciamo a comprendere.",
-  extra:"<p>Ogni partecipante potrà vivere la propria costellazione, in un'esperienza collettiva dove chi pone la domanda, chi osserva e chi rappresenta condividono lo stesso spazio di ascolto.</p>",
-  price:'35€',priceLabel:'a persona',book:'Costellazioni spirituali con Maddalena Angeli (Giovedì 26 Novembre, 20:30)'},
- {id:'riparo',titolo:'Il tempo del riparo',chi:'Habitat Counseling® con Cristina Giuntoli',cat:'interiorita',img:'riparo.jpg',tag:'Laboratorio',
-  when:[['2026-11-28T15:00','2026-11-28T18:00']],
-  testo:"Quando arriva il freddo cerchiamo il nostro angolo preferito. Tra natura, immagini, materiali e piccole esperienze creative esploriamo le metafore dell'abitare: il corpo come primo rifugio, la casa che ci contiene, le relazioni come spazi.",
-  extra:'<p>Cristina Giuntoli è counselor a indirizzo pluralistico integrato, laureata in architettura e ideatrice di Habitat Counseling® e delle carte "Case Selvatiche: Tane, Gusci e Nidi™".</p>',
-  price:'40€',priceLabel:'a persona',priceNote:'merenda inclusa',book:'Il tempo del riparo · Habitat Counseling con Cristina Giuntoli (Sabato 28 Novembre, 15:00)'},
- {id:'bagno-sonoro',titolo:'Bagno sonoro',chi:'con Benedetta Pisani',cat:'benessere',img:'bagno-sonoro.jpg',pos:'center 30%',tag:'Campane di cristallo',
-  when:[['2026-11-29T10:00','2026-11-29T11:00']],
+ {id:'educare',titolo:'Come educare alla libertà in famiglia',chi:'con la dott.ssa Serena Luisi · Progetto Campo Armonico (Centro Eidos)',cat:'famiglia',img:'educare.jpg',tag:'Incontro 2 di 2',
+  when:[['2026-12-02T18:00','2026-12-02T20:00']],
+  testo:"Dalla teoria alla pratica educativa: un laboratorio esperienziale in piccolo gruppo per esplorare come educare alla libertà nella famiglia e nei contesti educativi.",
+  extra:"<p>Con gli strumenti della Psicoterapia della Gestalt si parte da esperienze e situazioni quotidiane portate dai partecipanti, per comprendere le dinamiche relazionali e trovare insieme risposte educative più consapevoli, capaci di favorire la crescita e l'autonomia dei bambini.</p>",
+  price:'25€',priceLabel:'a famiglia',book:'Come educare alla libertà in famiglia · dott.ssa Serena Luisi (Mercoledì 2 Dicembre, 18:00–20:00)'},
+ {id:'sound-duelune',titolo:'Sound Bath',chi:'con Greta e Maurizio · duelune, sound & movement',cat:'benessere',img:'sound-duelune.jpg',contain:true,tag:'Sound healing',
+  when:[['2026-12-04T19:00','2026-12-04T20:30']],
+  testo:"Un viaggio di profondo rilassamento, dove la parola diventa un dolce invito a lasciar andare i pensieri e ad abbandonarsi alle emozioni che il suono risveglia nel corpo.",
+  extra:"<p>Le vibrazioni delle campane ci riportano alle nostre radici: un percorso sonoro di rilascio emotivo attraverso le frequenze di diversi strumenti e gli elementi che ci abitano, Terra, Fuoco, Acqua, Aria ed Etere. Un vortice di suoni che scioglie le tensioni e ricongiunge anima e corpo.</p>",
+  price:'25€',priceLabel:'a persona',book:'Sound Bath con Greta e Maurizio · duelune (Venerdì 4 Dicembre, 19:00–20:30)'},
+ {id:'casette',titolo:'Casette di luce',chi:'workshop di ceramica con Linda Bianchi Cervini',cat:'arte',img:'casette.jpg',contain:true,tag:'Workshop',
+  when:[['2026-12-05T15:30','2026-12-05T18:00']],
+  testo:"Due ore e mezza per creare casette o alberi di Natale porta lumini, tutti personalizzati: il regalo fatto a mano che illuminerà le tue feste, o quelle di qualcun altro.",
+  extra:"<p>Lavoreremo la terraglia bianca con la tecnica della lastra, perfetta per le forme strutturate. Cottura e materiali compresi.</p>",
+  price:'45€',priceLabel:'a persona',book:'Casette di luce · workshop di ceramica con Linda Bianchi Cervini (Sabato 5 Dicembre, 15:30–18:00)'},
+ {id:'brunch',titolo:'Sunday Brunch',chi:'la domenica, senza fretta e tutta vegetale · by Libra',cat:'cucina',img:'brunch.jpg',contain:true,tag:'2 domeniche',
+  when:[['2026-12-06T12:00','2026-12-06T16:00'],['2026-12-20T12:00','2026-12-20T16:00']],
+  testo:"Il brunch vegetale della domenica, con il menu di dicembre.",
+  extra:"<ul><li><b>Pancakes</b> alle pere caramellate con scaglie di cioccolato fondente e sciroppo d'acero</li><li><b>Croissants</b> e marmellata</li><li><b>Avocado toast</b> con feta di mandorle, semi di zucca e polvere di radicchio</li><li><b>Hummus</b> di barbabietola con verdura fresca e focaccia cotta a legna</li></ul>",
+  price:'35€',priceLabel:'a persona',book:'Sunday Brunch (Domenica 6 o 20 Dicembre, 12:00–16:00 – specifica la data)'},
+ {id:'piatti',titolo:"Piatti d'Autore",chi:'workshop di ceramica con Linda Bianchi Cervini',cat:'arte',img:'piatti.jpg',contain:true,tag:'Workshop',
+  when:[['2026-12-06T15:00','2026-12-06T17:00']],
+  testo:"Ognuno decora il proprio piatto biscottato scegliendo liberamente il tema: fiori, frutta, scritte, motivi geometrici, un ricordo, un regalo per qualcuno di speciale. Non serve saper disegnare: ogni piatto sarà un pezzo unico.",
+  extra:"<p>Compresi un piatto da decorare, tutti i materiali e le cotture. Si possono acquistare altri pezzi da decorare oltre a quello incluso.</p>",
+  price:'40€',priceLabel:'a persona',book:"Piatti d'Autore · workshop di ceramica con Linda Bianchi Cervini (Domenica 6 Dicembre, 15:00–17:00)"},
+ {id:'ceramica',titolo:'Ceramica base',chi:'con Linda Bianchi Cervini',cat:'arte',img:'ceramica.jpg',tag:'Laboratorio',
+  when:[['2026-12-10T18:00','2026-12-10T20:00']],
+  testo:"Un laboratorio aperto a tutti per modellare un piccolo oggetto con la tecnica del pizzicato, decorarlo e seguirne il processo fino alla cottura. Un'esperienza lenta e creativa per entrare in contatto con la materia.",
+  extra:"<p>Si può partecipare anche a un solo incontro: ogni lezione è completa e indipendente.</p>",
+  price:'40€',priceLabel:'a persona',book:'Ceramica base con Linda Bianchi Cervini (Giovedì 10 Dicembre, 18:00–20:00)'},
+ {id:'sound-pisani',titolo:'Sound Bath · campane di cristallo',chi:'con Benedetta Pisani',cat:'benessere',img:'sound-pisani.jpg',contain:true,tag:'Crystal bowls',
+  when:[['2026-12-11T18:30','2026-12-11T19:30']],
   testo:"Un'esperienza immersiva di ascolto e rilassamento: le vibrazioni delle campane di cristallo si diffondono nello spazio creando un paesaggio sonoro avvolgente. Una pausa dalla quotidianità, vissuta attraverso il suono.",
-  extra:'',price:'25€',priceLabel:'a persona',book:'Bagno sonoro con Benedetta Pisani (Domenica 29 Novembre, 10:00)'}
+  extra:'',price:'25€',priceLabel:'a persona',book:'Sound Bath con Benedetta Pisani (Venerdì 11 Dicembre, 18:30–19:30)'},
+ {id:'cnv',titolo:'Introduzione alla Comunicazione Nonviolenta',chi:'con Giacomo Poleschi',cat:'interiorita',img:'cnv.jpg',contain:true,tag:'Seminario di 2 giorni',
+  when:[['2026-12-12T09:30','2026-12-12T18:00'],['2026-12-13T09:30','2026-12-13T17:00']],
+  testo:"«Parlare onestamente senza criticare, ascoltare con curiosità senza sentire giudizio.» Imparare ad ascoltare, a esprimere con chiarezza ciò di cui hai bisogno, a gestire i conflitti della vita quotidiana.",
+  extra:"<p>Esploreremo i modi di comunicare che ci allontanano da noi stessi e dagli altri, e riscopriremo il potere di scegliere un modo di relazionarci più in armonia con i nostri valori. Sabato 9:30–18:00, domenica 9:30–17:00. Posti limitati: massimo 25 partecipanti.</p><p><b>Prossimi incontri 2027:</b></p><ul><li><b>9–10 gennaio</b> · Dare parole vive a ciò che conta</li><li><b>30–31 gennaio</b> · Vivere pienamente la rabbia, liberarsi dal senso di colpa</li><li><b>6–7 marzo</b> · Parlare e ascoltare: la CNV con bambini e adolescenti</li></ul>",
+  price:'130€',priceLabel:'a persona',book:'Introduzione alla Comunicazione Nonviolenta con Giacomo Poleschi (Sabato 12 e Domenica 13 Dicembre)'}
 ];
 /* giorni: 1 = lunedì … 7 = domenica */
+var NATALE=['2026-12-25'];
 var FISSI=[
- {titolo:'Yoga Posturale',chi:'con Mathieu',giorni:'Lunedì e Venerdì · 9:30–10:30',regole:[[1,'09:30','10:30'],[5,'09:30','10:30']],
-  testo:"Movimento, mobilità, allungamento, stabilità e respiro per riconoscere le tensioni accumulate e migliorare la qualità del movimento. Non occorre essere flessibili né avere esperienza.",price:'20€',priceLabel:'a lezione',book:'Yoga Posturale con Mathieu (Lunedì o Venerdì 9:30 – specifica la data)'},
- {titolo:'Semi di Armonia',chi:'Progetto Campo Armonico · Centro Eidos · 3–6 anni',giorni:'Lunedì e Giovedì · 17:00–19:00',regole:[[1,'17:00','19:00'],[4,'17:00','19:00']],
-  testo:"Laboratori serali per decomprimere dopo la scuola. Novembre: <b>Co-Regolazione, la Tana e la Magia della Luce</b> — tane con scatoloni e rami, risonanze sonore, il ritmo del respiro e giochi di luce.",price:'20€',priceLabel:'a lezione',book:'Semi di Armonia · Centro Eidos (Lunedì o Giovedì 17:00 – specifica la data)'},
+ {titolo:'Yoga Posturale',chi:'con Mathieu',giorni:'Lunedì e Venerdì · 9:30–10:30',regole:[[1,'09:30','10:30'],[5,'09:30','10:30']],salta:NATALE,
+  testo:"Movimento, mobilità, allungamento, stabilità e respiro per riconoscere le tensioni accumulate e migliorare la qualità del movimento. Accessibile a tutti, anche senza esperienza.",price:'20€',priceLabel:'a lezione',book:'Yoga Posturale con Mathieu (Lunedì o Venerdì 9:30 – specifica la data)'},
  {titolo:'Yoga Terapia',chi:'con Silvia Callarelli',giorni:'Martedì · 18:15–19:15',regole:[[2,'18:15','19:15']],
-  testo:"Lezioni private, di coppia o di gruppo: respiro, grounding, meditazione in movimento e regolazione del sistema nervoso, in modo dolce e consapevole.",price:'20€',priceLabel:'a lezione',book:'Yoga Terapia con Silvia Callarelli (Martedì 18:15)'},
- {titolo:'QHR Lab',chi:'Qigong Human Resonance · Matteo Martorana',giorni:'Martedì 19:30 · Venerdì 10:45',regole:[[2,'19:30','20:30'],[5,'10:45','11:45']],
-  testo:"Qigong e resonance frequency breathing, aperto a tutti i livelli, con sensori HRV per osservare la risposta del corpo alla pratica.",price:'20€',priceLabel:'a lezione',book:'QHR Lab con Matteo Martorana (Martedì 19:30 o Venerdì 10:45 – specifica la data)'},
+  testo:"Respiro, grounding, meditazione in movimento e regolazione del sistema nervoso per integrare corpo e mente. Lezioni private, di coppia o di gruppo.",price:'20€',priceLabel:'a lezione',book:'Yoga Terapia con Silvia Callarelli (Martedì 18:15)'},
+ {titolo:'QHR Lab',chi:'Qigong Human Resonance · Matteo Martorana',giorni:'Martedì 19:30 · Venerdì 10:45',regole:[[2,'19:30','20:30'],[5,'10:45','11:45']],salta:NATALE,
+  testo:"Qigong e resonance frequency breathing, aperto a tutti i livelli: postura, respiro e intenzione, con sensori HRV per osservare la risposta del corpo alla pratica.",price:'20€',priceLabel:'a lezione',book:'QHR Lab con Matteo Martorana (Martedì 19:30 o Venerdì 10:45 – specifica la data)'},
  {titolo:'Allenamento funzionale',chi:'personalizzato · con Simone Gatti',giorni:'Lunedì–Sabato · su appuntamento',regole:[],
-  testo:"Un percorso di movimento personalizzato con approccio chinesiologico, per riequilibrare, riabilitare e potenziare.",price:'da 35€',priceLabel:'a sessione',book:'Allenamento funzionale personalizzato con Simone Gatti'}
+  testo:"Un percorso personalizzato che parte da una valutazione di abitudini, forza, equilibrio, mobilità e resistenza. Sessioni individuali o di coppia, per ogni fase della vita.",price:'da 35€',priceLabel:'a sessione',book:'Allenamento funzionale personalizzato con Simone Gatti'}
 ];
-
